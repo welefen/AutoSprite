@@ -14,23 +14,25 @@ AutoSprite是一款将小图自动合并成大图片，并且可以自动修改�
 
 由于一个项目里可能会需要合并成多个css sprites, 所以需要知道将哪些小图片合并在一起，并且将这些小图片放在一个文件夹里。
 
-<?php
+```
+	<?php
 
-$path = dirname(__FILE__);
-$file =  '../src/AutoSprite/AutoSprite.class.php';
-function cssImgFilter($file){
-	//return true;
-}
-require_once $file;
-$autoSprite = new AutoSprite();
-$autoSprite->imgPath = $path . '/img/';
-$autoSprite->outputImgFile = $path . '/output_img/a.png';
-$autoSprite->direction = 1;
-$autoSprite->margin = 10;
-$autoSprite->cssPath = $path . '/css/';
-$autoSprite->cssSavePath = $path . '/css_save/';
-$autoSprite->cssImgFilter = 'cssImgFilter';
-$autoSprite->cssReplaceImgPrefixPath = '../img/first/';
-$output = $autoSprite->generate();
+	$path = dirname(__FILE__);
+	$file =  '../src/AutoSprite/AutoSprite.class.php';
+	function cssImgFilter($file){
+		//return true;
+	}
+	require_once $file;
+	$autoSprite = new AutoSprite();
+	$autoSprite->imgPath = $path . '/img/';
+	$autoSprite->outputImgFile = $path . '/output_img/a.png';
+	$autoSprite->direction = 1;
+	$autoSprite->margin = 10;
+	$autoSprite->cssPath = $path . '/css/';
+	$autoSprite->cssSavePath = $path . '/css_save/';
+	$autoSprite->cssImgFilter = 'cssImgFilter';
+	$autoSprite->cssReplaceImgPrefixPath = '../img/first/';
+	$output = $autoSprite->generate();
 
-?>
+	?>
+```
