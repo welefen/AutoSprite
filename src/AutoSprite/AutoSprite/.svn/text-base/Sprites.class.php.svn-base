@@ -1,0 +1,187 @@
+<?php
+/**
+ * 
+ * css Sprites class
+ * @author lichengyin
+ *
+ */
+class Sprites{
+	
+	private static $_instance = null;
+	
+	private $_engine = null;
+	
+	public static function getInstance(){
+		if(self::$_instance === null){
+			self::$_instance = new self;
+			$engine = ucfirst(self::$_instance->getEngine());
+			if($engine){
+				require_once dirname(__FILE__) . '/engine/' . $engine . '.class.php';
+				$engine_class = 'Sprites_' . $engine;
+				self::$_instance->_engine = new $engine_class;
+			}else {
+				//throw new Exception("please install gd or imagick", 1);
+			}
+		}
+		return self::$_instance;
+	}
+	public function getEngine(){
+		if (extension_loaded('imagick')) {
+			return 'imagick';
+		}elseif(extension_loaded('gd')) {
+			return 'gd';
+		}
+		return '';
+	}
+	/**
+	 * get mage extention
+	 * @param string $file
+	 */
+	public function getImageExt($file){
+		$file_exts = explode('.', $file);
+		$ext = strtoupper($file_exts[count($file_exts) - 1]);
+		if($ext == 'JPEG') return 'JPG';
+		return $ext;
+	}
+	/**
+	 * mkdir
+	 * @param string $dir
+	 * @param int $mode
+	 */
+	public function mkdir($dir, $mode = 0777){
+		if (is_dir($dir) || @mkdir($dir, $mode, true)) return true;
+		if (!mkdir(dirname($dir), $mode)) return false;
+		return @mkdir($dir, $mode, true);
+	}
+	/**
+	 * set options
+	 * @param array $options
+	 */
+	public function setOptions($options = array()){
+		$options = array_merge(array(
+			'filelist' => array(),
+			'margin' => 5,	//margin
+			'direction' => 1, //0 mix,1 vertical, 2 horiztal
+			'background' => '',	//background color
+			'transparent' => true, //
+			'output' => '', //output file path, include filename
+			'quality' => 75, // just for jpg file 0 - 100
+			'colorsnum' => 0, // juest for gif/png file, 0 is true color
+		), $options);
+		if(count($options['filelist']) == 0) return false;
+		$this->_engine->setOptions($options);
+		return true;
+	}
+	/**
+	 * generate css sprites
+	 * @param unknown_type $options
+	 */
+	public function generate($options = array()){
+		if (!$this->_engine) return false;
+		if(!$this->setOptions($options)) return false;
+		$output_size = $this->calOutputSize(
+			$this->_engine->options['filelist'], 
+			$this->_engine->options['direction'], 
+			$this->_engine->options['margin']
+		);
+		$output_im = $this->_engine->createOutputFile($output_size);
+		$offset_x = $offset_y = 0;
+		$css = array();
+		foreach($this->_engine->options['filelist'] as $file){
+			$current_file_im = $this->_engine->createImageFromFile($file);
+			$current_file_size = getimagesize($file);
+			$this->_engine->imagecopy($output_im, $current_file_im, $offset_x, $offset_y, $current_file_size);
+			switch ($this->_engine->options['direction']){
+				case 0 : break;
+				case 1 : 
+					$css[$file] = array(0 - $offset_x, 0 - $offset_y, $current_file_size[0], $current_file_size[1]);
+					$offset_y += $current_file_size[1] + $this->_engine->options['margin'];
+					;break;
+				case 2 :
+					$css[$file] = array(0 - $offset_x, 0 - $offset_y, $current_file_size[0], $current_file_size[1]);
+					$offset_x += $current_file_size[0] + $this->_engine->options['margin'];
+					;break;
+			}
+		}
+		$this->_engine->saveImage($output_im, $this->_engine->options['output']);
+		return $css;
+	}
+	/**
+	 * 计算输出的图片宽和高
+	 * @param array $file_list
+	 */
+	public function calOutputSize($file_list = array(), $direction = 0, $margin = 0){
+		$direction = intval($direction);
+		$margin = intval($margin);
+		$total_height = $max_height = $total_width = $max_width = 0;
+		foreach($file_list as $file){
+			if($file){
+				$size = getimagesize($file);
+				$total_width+= $size[0] + $margin;
+				if($size[0] > $max_width) $max_width = $size[0];
+				$total_height+= $size[1] + $margin;
+				if($size[1] > $max_height) $max_height = $size[1];
+			}
+		}
+		switch($direction){
+			case 0 : break;
+			case 1 : return array(
+				'width' => $max_width,
+				'height' => $total_height - $margin,
+			);break;
+			case 2 : return array(
+				'width' => $total_width - $margin,
+				'height' => $max_height,
+			);break;
+		}
+		return array('width' => 0, 'height' => 0);
+	}
+	/**
+	 * format color 
+	 * @param string $color
+	 */
+	public function formatColor($color = ''){
+		$color = strval($color);
+		if(!$color) return '';
+		$color = str_replace('#', '', $color);
+		if(strlen($color) == 3){
+			$colors = explode('', $color);
+			$color = $colors[0] . $colors[0] . $colors[1] . $colors[1] . $colors[2] . $colors[2];
+		}
+		return $color;
+	}
+	/**
+	 * get RGB color
+	 * @param string $color
+	 */
+	public function getRGBColor($color){
+		$color = hexdec($color);
+		$R = 0xFF & ($color >> 0x10);
+		$G = 0xFF & ($color >> 0x8);
+		$B = 0xFF & $color;
+		return array('R' => $R, 'G' => $G, 'B' => $B);
+	}
+	/**
+	 *  set option
+	 * @param array $options
+	 */
+	public function formatOptions($options){
+		$options['margin'] = $this->unsignIntval($options['margin']);
+		$options['transparent'] = !!$options['transparent'];
+		$image_ext = $this->getImageExt($options['output']);
+		if(!in_array($image_ext, array('GIF', 'PNG'))){
+			$options['transparent'] = false;
+		}
+		$options['direction'] = $this->unsignIntval($options['direction']);
+		$options['quality'] = $this->unsignIntval($options['direction']);
+		if($options['quality'] > 100){
+			$options['quality'] = 100;
+		}
+		$options['colorsnum'] = $this->unsignIntval($options['colorsnum']);
+		return $options;
+	}
+	public function unsignIntval($value, $default = 0){
+		$value = intval($value);
+		return $value >= 0 ? $value : $default;
+	}
+}

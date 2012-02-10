@@ -1,0 +1,10 @@
+*{margin:0;padding:0}
+.a{background:url(../img/first/b/a.png) repeat-x;
+	width:74px;
+	height:23px}
+.b{background:url(../img/first/b/b.png) no-repeat;
+	width:74px;
+	height:23px}
+.c{background:url(../img/first/b/c.png) no-repeat;
+	width:55px;
+	height:55px}
