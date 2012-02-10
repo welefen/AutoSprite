@@ -1,4 +1,5 @@
 ## 简介
+
 AutoSprite是一款将小图自动合并成大图片，并且可以自动修改对应CSS的css sprites工具。
 
 相对之前的一些css sprites工具，具有以下的特点：
@@ -14,6 +15,7 @@ AutoSprite是一款将小图自动合并成大图片，并且可以自动修改�
 由于一个项目里可能会需要合并成多个css sprites, 所以需要知道将哪些小图片合并在一起，并且将这些小图片放在一个文件夹里。
 
 <?php
+
 $path = dirname(__FILE__);
 $file =  '../src/AutoSprite/AutoSprite.class.php';
 function cssImgFilter($file){
@@ -30,4 +32,5 @@ $autoSprite->cssSavePath = $path . '/css_save/';
 $autoSprite->cssImgFilter = 'cssImgFilter';
 $autoSprite->cssReplaceImgPrefixPath = '../img/first/';
 $output = $autoSprite->generate();
+
 ?>
