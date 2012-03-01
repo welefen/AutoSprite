@@ -24,13 +24,21 @@ AutoSprite是一款将小图自动合并成大图片，并且可以自动修改�
 	}
 	require_once $file;
 	$autoSprite = new AutoSprite();
+	//设置小图片所在的目录
 	$autoSprite->imgPath = $path . '/img/';
+	//合并后的大图存放的位置
 	$autoSprite->outputImgFile = $path . '/output_img/a.png';
+	//合并方向，1为垂直方向，2为水平方向，0为混合方向
 	$autoSprite->direction = 1;
+	//合并大图中小图之间的间距
 	$autoSprite->margin = 10;
+	//对应CSS所在的位置
 	$autoSprite->cssPath = $path . '/css/';
+	//自动替换后CSS存放的位置，如果覆盖原CSS文件的化，这里的值和cssPath相同即可
 	$autoSprite->cssSavePath = $path . '/css_save/';
+	//css中图片的命中策略
 	$autoSprite->cssImgFilter = 'cssImgFilter';
+	//CSS中小图片地址替换为大图片时目录前缀
 	$autoSprite->cssReplaceImgPrefixPath = '../img/first/';
 	$output = $autoSprite->generate();
 
