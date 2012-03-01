@@ -1,0 +1,16 @@
+*{margin:0;padding:0}
+.a{background: repeat-x;
+	width:74px;
+	height:23px;
+;background-position:0 0 }
+.b{background: no-repeat;
+	width:74px;
+	height:23px;
+;background-position:-63px 0 }
+.c{background: no-repeat;
+	width:55px;
+	height:55px;
+;background-position:-126px 0 }
+.a,
+.b,
+.c{background-image:url("../img/output_img/a.png");}

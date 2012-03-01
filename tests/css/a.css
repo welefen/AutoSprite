@@ -1,0 +1,16 @@
+*{margin:0;padding:0;}
+.a{
+	background:url(../img/dialog/dialog_btn_cancel.png) repeat-x;
+	width:74px;
+	height:23px;
+}
+.b{
+	background:url(../img/dialog_btn_ok.png) no-repeat;
+	width:74px;
+	height:23px;
+}
+.c{
+	background:url(../img/dialog_icon_confirm.png) no-repeat;
+	width:55px;
+	height:55px;
+}
