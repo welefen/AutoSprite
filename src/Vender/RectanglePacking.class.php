@@ -8,60 +8,45 @@
  *
  */
 class RectanglePacking {
-	
+
 	public static $fileList = array (); //图片文件列表
-	
 
 	public $margin = 0; //合并图片之间的间距
-	
 
 	public $nums = 5; //运行的次数
-	
 
 	public $pix = 16; //每次变化的像素值
-	
 
 	private $_firstFile = ''; //第一个文件
-	
 
 	private $_corners = array (); //存放可以放图片的点
-	
 
 	private $_firstCorners = array (); //第一个图片产生的corner
-	
 
 	private $_fileRects = array (); //保存图片矩形的信息
-	
 
 	private $_firstFileRects = array (); //第一个图片的信息
-	
 
 	private $_areas = array (); //保存每个合并方案的信息
-	
 
 	private $_singleMaxHeight = 0; //单个图片的最大高度
-	
 
 	private $_singleMaxWidth = 0; //单个图片的最大宽度
-	
 
 	private $_totalWidth = 0; //总宽度
-	
 
 	private $_maxWidth = 0; //最大的图片宽
-	
 
 	private $_maxHeight = 0; //最大的图片高
-	
 
 	private $_minRectArea = 0; //图片的最小面积
-	
 
 	public function __construct($fileList = array()) {
 		$this->sortFiles ( $fileList );
 		$this->_maxWidth = $this->_totalWidth;
 		$this->_maxHeight = $this->_singleMaxHeight;
 	}
+
 	public function run() {
 		$i = 0;
 		$this->_firstPutIt ( $this->_firstFile );
@@ -80,6 +65,7 @@ class RectanglePacking {
 		}
 		return $this->_areas [count ( $this->_areas ) - 1];
 	}
+
 	/**
 	 * 
 	 * 
@@ -98,6 +84,7 @@ class RectanglePacking {
 			$this->_maxHeight += $pix;
 		}
 	}
+
 	/**
 	 * 
 	 * 生成单个图片区域
@@ -114,6 +101,7 @@ class RectanglePacking {
 		}
 		return true;
 	}
+
 	/**
 	 * 
 	 * 将图片按高度从大到小排列
@@ -134,6 +122,7 @@ class RectanglePacking {
 		}
 		self::$fileList = $result;
 	}
+
 	/**
 	 * 
 	 * 获取图片的矩形信息
@@ -142,12 +131,16 @@ class RectanglePacking {
 	public static function getFileRect($file) {
 		if (! array_key_exists ( $file, self::$fileList )) {
 			list ( $width, $height ) = getimagesize ( $file );
-			$array = array ('width' => $width, 'height' => $height );
+			$array = array (
+				'width' => $width, 
+				'height' => $height 
+			);
 			self::$fileList [$file] = $array;
 			return $array;
 		}
 		return self::$fileList [$file];
 	}
+
 	/**
 	 * 
 	 * 设置小图片所在的位置信息
@@ -156,8 +149,12 @@ class RectanglePacking {
 	 * @param int $y
 	 */
 	public function setStartPos($file, $x, $y) {
-		$this->_fileRects [$file] = array_merge ( self::getFileRect ( $file ), array ('x' => $x, 'y' => $y ) );
+		$this->_fileRects [$file] = array_merge ( self::getFileRect ( $file ), array (
+			'x' => $x, 
+			'y' => $y 
+		) );
 	}
+
 	/**
 	 * 
 	 * 首个图片的设置和生成corners
@@ -175,6 +172,7 @@ class RectanglePacking {
 		$this->_firstCorners = $this->_corners;
 		$this->_firstFileRects = $this->_fileRects;
 	}
+
 	public function putIt($file) {
 		$rectInfo = self::getFileRect ( $file );
 		for($i = 0; $i < count ( $this->_corners ); $i ++) {
@@ -199,6 +197,7 @@ class RectanglePacking {
 		}
 		return false;
 	}
+
 	/**
 	 * 
 	 * 将已有的corners按x值从小到大排列
@@ -208,6 +207,7 @@ class RectanglePacking {
 			return true;
 		uasort ( $this->_corners, create_function ( '$a,$b', 'return $a["x"] >= $b["x"] ? 1:-1;' ) );
 	}
+
 	/**
 	 * 
 	 * 获取corner
@@ -219,9 +219,12 @@ class RectanglePacking {
 			$x += $this->margin;
 		if ($y > 0)
 			$y += $this->margin;
-		$result = array ('x' => $x, 'y' => $y/*, 'rect' => array ($x, $y, $this->_maxWidth, $this->_maxHeight ) */);
+		$result = array (
+			'x' => $x, 
+			'y' => $y/*, 'rect' => array ($x, $y, $this->_maxWidth, $this->_maxHeight ) */);
 		return $result;
 	}
+
 	/**
 	 * 
 	 * 检测将一个小图片放在一个corner是否被其他图片包含
@@ -260,6 +263,7 @@ class RectanglePacking {
 		}
 		return false;
 	}
+
 	/**
 	 * 
 	 * 获取生成的大图片的矩形信息
@@ -274,8 +278,13 @@ class RectanglePacking {
 			$maxHeight = max ( $maxHeight, $value ['y'] + $value ['height'] );
 			$maxWidth = max ( $maxWidth, $value ['x'] + $value ['width'] );
 		}
-		return array ('width' => $maxWidth, 'height' => $maxHeight, 'area' => $maxHeight * $maxWidth );
+		return array (
+			'width' => $maxWidth, 
+			'height' => $maxHeight, 
+			'area' => $maxHeight * $maxWidth 
+		);
 	}
+
 	/**
 	 * 
 	 * 获取生成的最后一个大图片的矩形信息

@@ -6,20 +6,27 @@
  *
  */
 class AutoSprite_Generate {
+
 	/**
 	 * 
 	 * 图片生成的engine
 	 * @var string
 	 */
 	public $engine = '';
+
 	/**
 	 * 支持的图片生成方式列表
 	 */
-	private $_supportEngineList = array ('gd', 'imagick' );
+	private $_supportEngineList = array (
+		'gd', 
+		'imagick' 
+	);
+
 	/**
 	 * 具体的图片生成类实例
 	 */
 	private $_engineInstance = null;
+
 	/**
 	 * 默认配置项
 	 */
@@ -33,7 +40,7 @@ class AutoSprite_Generate {
 		'quality' => 75, 
 		'colorsnum' => 256 
 	);
-	
+
 	public function __construct($engine = '') {
 		$this->checkSurpportEngine ();
 		if ($engine && in_array ( $engine, $this->_supportEngineList )) {
@@ -44,6 +51,7 @@ class AutoSprite_Generate {
 		$this->_engineInstance = AutoSprite::loadClass ( 'AutoSprite_Generate_' . ucfirst ( $this->engine ), true );
 		$this->_engineInstance->generateInstance = $this;
 	}
+
 	/**
 	 * 
 	 * 检测支持哪些图片生成方式
@@ -57,6 +65,7 @@ class AutoSprite_Generate {
 		}
 		$this->_supportEngineList = $result;
 	}
+
 	/**
 	 * 获取图片的后缀名
 	 * @param string $file
@@ -67,6 +76,7 @@ class AutoSprite_Generate {
 			return 'JPG';
 		return $ext;
 	}
+
 	/**
 	 * 创建目录
 	 * @param string $dir
@@ -75,6 +85,7 @@ class AutoSprite_Generate {
 	public function mkdir($dir, $mode = 0777) {
 		return AutoSprite::mkdir ( $dir, $mode );
 	}
+
 	/**
 	 * 设置配置项
 	 * @param array $options
@@ -86,6 +97,7 @@ class AutoSprite_Generate {
 		$this->_engineInstance->setOptions ( $options );
 		return true;
 	}
+
 	/**
 	 * 生成合并后的图片，并返回小图片在大图片中所在的位置
 	 * @param array $options
@@ -98,7 +110,7 @@ class AutoSprite_Generate {
 		$direction = $this->_engineInstance->options ['direction'];
 		$result = array ();
 		//图片混合拼接模式需要调用RectanglePacking类
-		if ($direction === 0) {
+		if ($direction === 3) {
 			require_once dirname ( dirname ( __FILE__ ) ) . '/Vender/RectanglePacking.class.php';
 			$rectPacking = new RectanglePacking ( $this->_engineInstance->options ['filelist'] );
 			$rectPacking->margin = $this->_engineInstance->options ['margin'];
@@ -112,7 +124,6 @@ class AutoSprite_Generate {
 		$output_im = $this->_engineInstance->createOutputFile ( $output_size );
 		//获取小图片所在大图片中的位置
 		$css = $this->getOutputPos ( $output_im, $result );
-		
 		$output = $this->_engineInstance->options ['output'];
 		//如果该文件已经存在，则删除
 		if (file_exists ( $output )) {
@@ -133,6 +144,7 @@ class AutoSprite_Generate {
 		$this->_engineInstance->saveImage ( $output_im, $this->_engineInstance->options ['output'] );
 		return $css;
 	}
+
 	/**
 	 * 
 	 * 获取小图片所在大图片中的位置
@@ -144,8 +156,16 @@ class AutoSprite_Generate {
 		if ($this->_engineInstance->options ['direction'] === 0) {
 			foreach ( $result as $file => $value ) {
 				$current_file_im = $this->_engineInstance->createImageFromFile ( $file );
-				$this->_engineInstance->imagecopy ( $output_im, $current_file_im, $value ['x'], $value ['y'], array ($value ['width'], $value ['height'] ) );
-				$css [$file] = array (0 - $value ['x'], 0 - $value ['y'], $value ['width'], $value ['height'] );
+				$this->_engineInstance->imagecopy ( $output_im, $current_file_im, $value ['x'], $value ['y'], array (
+					$value ['width'], 
+					$value ['height'] 
+				) );
+				$css [$file] = array (
+					0 - $value ['x'], 
+					0 - $value ['y'], 
+					$value ['width'], 
+					$value ['height'] 
+				);
 			}
 			return $css;
 		}
@@ -157,12 +177,22 @@ class AutoSprite_Generate {
 			$this->_engineInstance->imagecopy ( $output_im, $current_file_im, $offset_x, $offset_y, $current_file_size );
 			switch ($direction) {
 				case 1 :
-					$css [$file] = array (0 - $offset_x, 0 - $offset_y, $current_file_size [0], $current_file_size [1] );
+					$css [$file] = array (
+						0 - $offset_x, 
+						0 - $offset_y, 
+						$current_file_size [0], 
+						$current_file_size [1] 
+					);
 					$offset_y += $current_file_size [1] + $this->_engineInstance->options ['margin'];
 					;
 					break;
 				case 2 :
-					$css [$file] = array (0 - $offset_x, 0 - $offset_y, $current_file_size [0], $current_file_size [1] );
+					$css [$file] = array (
+						0 - $offset_x, 
+						0 - $offset_y, 
+						$current_file_size [0], 
+						$current_file_size [1] 
+					);
 					$offset_x += $current_file_size [0] + $this->_engineInstance->options ['margin'];
 					;
 					break;
@@ -170,6 +200,7 @@ class AutoSprite_Generate {
 		}
 		return $css;
 	}
+
 	/**
 	 * 计算合并后的的图片宽和高
 	 * @param array $file_list
@@ -193,14 +224,24 @@ class AutoSprite_Generate {
 			case 0 :
 				break;
 			case 1 :
-				return array ('width' => $max_width, 'height' => $total_height - $margin );
+				return array (
+					'width' => $max_width, 
+					'height' => $total_height - $margin 
+				);
 				break;
 			case 2 :
-				return array ('width' => $total_width - $margin, 'height' => $max_height );
+				return array (
+					'width' => $total_width - $margin, 
+					'height' => $max_height 
+				);
 				break;
 		}
-		return array ('width' => 0, 'height' => 0 );
+		return array (
+			'width' => 0, 
+			'height' => 0 
+		);
 	}
+
 	/**
 	 * 格式化颜色
 	 * @param string $color
@@ -216,6 +257,7 @@ class AutoSprite_Generate {
 		}
 		return $color;
 	}
+
 	/**
 	 * 将颜色转化为RGB模式
 	 * @param string $color
@@ -225,8 +267,13 @@ class AutoSprite_Generate {
 		$R = 0xFF & ($color >> 0x10);
 		$G = 0xFF & ($color >> 0x8);
 		$B = 0xFF & $color;
-		return array ('R' => $R, 'G' => $G, 'B' => $B );
+		return array (
+			'R' => $R, 
+			'G' => $G, 
+			'B' => $B 
+		);
 	}
+
 	/**
 	 * 格式化配置项
 	 * @param array $options
@@ -235,7 +282,10 @@ class AutoSprite_Generate {
 		$options ['margin'] = $this->unsignIntval ( $options ['margin'] );
 		$options ['transparent'] = ! ! $options ['transparent'];
 		$image_ext = $this->getImageExt ( $options ['output'] );
-		if (! in_array ( $image_ext, array ('GIF', 'PNG' ) )) {
+		if (! in_array ( $image_ext, array (
+			'GIF', 
+			'PNG' 
+		) )) {
 			$options ['transparent'] = false;
 		}
 		$options ['direction'] = $this->unsignIntval ( $options ['direction'] );
@@ -246,6 +296,7 @@ class AutoSprite_Generate {
 		$options ['colorsnum'] = $this->unsignIntval ( $options ['colorsnum'] );
 		return $options;
 	}
+
 	/**
 	 * 
 	 * 格式化整数值

@@ -10,7 +10,7 @@
  * * repeat-y的时候需要水平方向合并，并且使用了repeat-y的图片要是最高的
  * 3、把一个小图片作为一个很大容器的背景，这时需要在大容器里添加小容器，将背景图设置给小容器
  * 4、不支持一个selector里有多个background：
- * * 不支持浏览器的hack引起的多个background，如：background:url();_background:url(),这种情况使用selector的hack。
+ * *  不支持浏览器的hack引起的多个background，如：background:url();_background:url(),这种情况使用selector的hack。
  * 5、图片混合合并模式比较耗时，最好是一些大小比较相似的图片使用这种模式
  * 6、不要将图片质量不高和图片质量非常高的一起合并，这样合并出来的图片会有质量问题
  * 7、CSS替换是基于本身CSS是合法的，不支持不合法的CSS进行替换

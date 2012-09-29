@@ -6,21 +6,26 @@
  *
  */
 class AutoSprite_Generate_Gd {
-	
+
 	private $_support_image_type = array ();
-	
+
 	public $generateInstance = null;
-	
+
 	public $options = array ();
-	
+
 	public function __construct() {
 		$gd_info = gd_info ();
-		foreach ( array ('PNG', 'GIF', 'JPG' ) as $name ) {
+		foreach ( array (
+			'PNG', 
+			'GIF', 
+			'JPG' 
+		) as $name ) {
 			if ($gd_info [$name . ' Support'] || $gd_info [$name . ' Create Support']) {
 				$this->_support_image_type [] = $name;
 			}
 		}
 	}
+
 	/**
 	 * set options
 	 * @param array $options
@@ -28,6 +33,7 @@ class AutoSprite_Generate_Gd {
 	public function setOptions($options) {
 		$this->options = $this->generateInstance->formatOptions ( $options );
 	}
+
 	/**
 	 * 
 	 * @param image resource $output_im
@@ -40,6 +46,7 @@ class AutoSprite_Generate_Gd {
 		imagecopy ( $output_im, $current_file_im, $offset_x, $offset_y, 0, 0, $current_file_size [0], $current_file_size [1] );
 		imagedestroy ( $current_file_im );
 	}
+
 	/**
 	 * 创建出示的output文件
 	 * @param array $size
@@ -68,6 +75,7 @@ class AutoSprite_Generate_Gd {
 		imagefill ( $sprite_image, 0, 0, $bgColor );
 		return $sprite_image;
 	}
+
 	/**
 	 * create an image from a file
 	 * @param string $file
@@ -85,6 +93,7 @@ class AutoSprite_Generate_Gd {
 		}
 		return null;
 	}
+
 	/**
 	 * save image
 	 * @param image resource $im
@@ -92,7 +101,10 @@ class AutoSprite_Generate_Gd {
 	 */
 	public function saveImage($im) {
 		$file_ext = $this->generateInstance->getImageExt ( $this->options ['output'] );
-		if (in_array ( $file_ext, array ('GIF', 'PNG' ) ) && $this->options ['colorsnum'] !== true) {
+		if (in_array ( $file_ext, array (
+			'GIF', 
+			'PNG' 
+		) ) && $this->options ['colorsnum'] !== true) {
 			imagetruecolortopalette ( $im, false, $this->options ['colorsnum'] );
 		}
 		switch ($file_ext) {
