@@ -7,67 +7,82 @@
  *
  */
 class AutoSprite_ReplaceCss {
+
 	/**
 	 * 
 	 * CSS文件路径，用作保存的时候用
 	 * @var string
 	 */
 	public $cssPath = '';
+
 	/**
 	 * 需要修改的CSS文件列表
 	 * 
 	 * @var array
 	 */
 	public $cssFiles = array ();
+
 	/**
 	 * 
 	 * CSS保存路径，如果为空，则跟原始路径相同
 	 * @var string
 	 */
 	public $cssSavePath = '';
+
 	/**
 	 * 
 	 * css文件里图片的路径过滤函数
 	 * @var function
 	 */
 	public $imgPathFilter = '';
+
 	/**
 	 * 
 	 * 生成之后小图片对应的位置列表
 	 * @var array
 	 */
 	public $imgFilesPattern = array ();
+
 	/**
 	 * 
 	 * 需要把小图片替换掉的图片文件名,即生成的大图片的文件名（连带引用的路径）
 	 * @var string
 	 */
 	public $replaceImg = '';
+
 	/**
 	 * 单个css selector的正则，不支持css里有expression
 	 * 由于expression里可能含有{,}，会导致这里的正则失效
 	 * 后续会结合FL里的CSS TOKEN分析来进行
 	 */
 	private $_cssSpritesPattern = '/([^\{\}\/]*)\{([^\{\}]*)\}/ies';
+
 	/**
 	 * 分析background-image里的url值的正则
 	 */
 	private $_urlPattern = '/url\s*\(\s*([\'\"]?)([^\'\"\)]+)\\1\s*\)/ies';
+
 	/**
 	 * 检测background-position是否有right, bottom的正则
 	 */
 	private $_backgroundPositionPattern = '/background(?:-position)?\s*:[^\;\{\}]*(right|bottom).*?/ies';
+
 	/**
 	 * background-image的正则
 	 */
-	private $_backgroundImagePattern = array ("/background(?:-image)?\s*:\s*;/ies", "/background(?:-image)?\s*:\s*$/ies" );
+	private $_backgroundImagePattern = array (
+		"/background(?:-image)?\s*:\s*;/ies", 
+		"/background(?:-image)?\s*:\s*$/ies" 
+	);
+
 	/**
 	 * 临时缓存
 	 */
 	private $_cache = array ();
-	
+
 	public function run() {
 		if ($this->cssPath) {
+			$this->cssPath = rtrim ( $this->cssPath ) . '/';
 			$this->cssFiles += AutoSprite::getFiles ( $this->cssPath, 'css', $this->cssPath );
 		}
 		$this->cssFiles = array_unique ( $this->cssFiles );
@@ -78,13 +93,17 @@ class AutoSprite_ReplaceCss {
 			$this->replaceFile ( $file );
 		}
 	}
+
 	/**
 	 * 
 	 * 替换单个CSS文件
 	 * @param string $file
 	 */
 	public function replaceFile($file) {
-		$this->_cache = array ('key' => array (), 'background' => '' );
+		$this->_cache = array (
+			'key' => array (), 
+			'background' => '' 
+		);
 		$content = AutoSprite::getFileContent ( $file );
 		$content = preg_replace ( $this->_cssSpritesPattern, "self::_replaceIt('\\1', '\\2', '" . $file . "')", $content );
 		if (count ( $this->_cache ['key'] )) {
@@ -111,6 +130,7 @@ class AutoSprite_ReplaceCss {
 		}
 		AutoSprite::setFileContent ( $file, $content );
 	}
+
 	/**
 	 * 
 	 * 替换单个CSS文件里面的内容
@@ -176,6 +196,7 @@ class AutoSprite_ReplaceCss {
 		}
 		return $key . "{" . trim ( trim ( $value ), ';' ) . "}";
 	}
+
 	/**
 	 * 
 	 * 修复replace的时候对引号的自动转义
@@ -187,6 +208,7 @@ class AutoSprite_ReplaceCss {
 		$content = str_replace ( '\\"', '"', $content );
 		return $content;
 	}
+
 	/**
 	 * 
 	 * 获取数值

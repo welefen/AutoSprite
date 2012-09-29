@@ -22,42 +22,54 @@
  *
  */
 class AutoSprite {
+
 	/**
 	 * 
 	 * 图片所在的目录
 	 * @var string
 	 */
 	public $imgPath = '';
+
 	/**
 	 * 
 	 * 需要合并的图片列表
 	 * @var array
 	 */
 	public $imgFiles = array ();
+
 	/**
 	 * 
 	 * 图片后缀名列表
 	 * @var array
 	 */
-	public static $imgExts = array ('png', 'jpg', 'gif', 'jpeg' );
+	public static $imgExts = array (
+		'png', 
+		'jpg', 
+		'gif', 
+		'jpeg' 
+	);
+
 	/**
 	 * 
 	 * css文件所在的目录
 	 * @var string
 	 */
 	public $cssPath = '';
+
 	/**
 	 * 
 	 * css文件列表
 	 * @var array
 	 */
 	public $cssFiles = array ();
+
 	/**
 	 * 
 	 * CSS文件保存路径，为空的话则覆盖原文件
 	 * @var string
 	 */
 	public $cssSavePath = '';
+
 	/**
 	 * 
 	 * 图片合并的方向
@@ -65,24 +77,28 @@ class AutoSprite {
 	 * @var int
 	 */
 	public $direction = 1;
+
 	/**
 	 * 
 	 * 合并时小图片之间的间距
 	 * @var int
 	 */
 	public $margin = 0;
+
 	/**
 	 * 
 	 * 合并图的背景
 	 * @var string
 	 */
 	public $background = '';
+
 	/**
 	 * 
 	 * 合成的图片是否透明
 	 * @var boolean
 	 */
 	public $transparent = true;
+
 	/**
 	 * 
 	 * 合并后的图片质量
@@ -90,6 +106,7 @@ class AutoSprite {
 	 * @var int
 	 */
 	public $quality = 75;
+
 	/**
 	 * 
 	 * 合并后的图片色彩值
@@ -97,12 +114,14 @@ class AutoSprite {
 	 * @var int
 	 */
 	public $colorsnum = 255;
+
 	/**
 	 * 
 	 * 自动检测图片合并的方向
 	 * @var boolean
 	 */
 	public $detectDirection = false; // 暂不考虑支持
+
 	/**
 	 * 
 	 * 图片使用了repeat的列表，只支持单个repeat，如：repeat-x, repeat-y， 不支持repeat。
@@ -110,6 +129,7 @@ class AutoSprite {
 	 * @var array
 	 */
 	public $repeatImgs = array ();
+
 	/**
 	 * 
 	 * 图片使用了center列表，如
@@ -117,41 +137,47 @@ class AutoSprite {
 	 * @var array
 	 */
 	public $centerImgs = array ();
+
 	/**
 	 * 
 	 * 合并后的图片存放路径
 	 * @var string
 	 */
 	public $outputImgFile = '';
+
 	/**
 	 * 
 	 * 查找CSS里引用的图片过滤函数
 	 * @var string
 	 */
 	public $cssImgFilter = '';
+
 	/**
 	 * 
 	 * 替换CSS文件里的图片的路径前缀
 	 * @var string
 	 */
 	public $cssReplaceImgPrefixPath = '';
+
 	/**
 	 * 
 	 * 当前类名
 	 * @var string
 	 */
 	private static $_class = '';
+
 	/**
 	 * 小图片在大图片中所在的位置
 	 */
 	private $_imgFilesPattern = array ();
-	
+
 	public function __construct() {
 		if (! self::checkExtension ( 'gd' ) && ! self::checkExtension ( 'imagick' )) {
 			$this->throwException ( 'AutoSprite use gd or imagick, please install it', 2 );
 		}
 		self::$_class = get_class ( $this );
 	}
+
 	/**
 	 * 
 	 * 获取版本号
@@ -159,6 +185,7 @@ class AutoSprite {
 	public static function getVersion() {
 		return '1.0.0';
 	}
+
 	/**
 	 * 
 	 * 合并图片，并返回小图片在合并图中所在的位置
@@ -166,11 +193,12 @@ class AutoSprite {
 	 */
 	public function generate($return = true) {
 		if ($this->imgPath) {
+			$this->imgPath = rtrim ( $this->imgPath ) . '/';
 			$this->imgFiles += self::getFiles ( $this->imgPath, join ( ',', self::$imgExts ), $this->imgPath );
 		}
 		$this->imgFiles = array_unique ( $this->imgFiles );
-		self::checkImgType ( $this->imgFiles );
-		self::checkFilesReadable ( $this->imgFiles );
+		$this->checkImgType ( $this->imgFiles );
+		$this->checkFilesReadable ( $this->imgFiles );
 		//小图片大于等于2个的时候才进行合并
 		if (count ( $this->imgFiles ) < 2) {
 			$this->throwException ( 'img files must greater than 2.', 5 );
@@ -185,21 +213,30 @@ class AutoSprite {
 		}
 		self::loadClass ( 'AutoSprite_Generate' );
 		$instance = new AutoSprite_Generate ();
-		$result = $instance->generate ( array ('filelist' => $this->imgFiles, 'margin' => $this->margin, 'direction' => $this->direction, 'background' => $this->background, 'transparent' => $this->transparent, 'output' => $this->outputImgFile, 'quality' => $this->quality, 'colorsnum' => $this->colorsnum ) );
+		$result = $instance->generate ( array (
+			'filelist' => $this->imgFiles, 
+			'margin' => $this->margin, 
+			'direction' => $this->direction, 
+			'background' => $this->background, 
+			'transparent' => $this->transparent, 
+			'output' => $this->outputImgFile, 
+			'quality' => $this->quality, 
+			'colorsnum' => $this->colorsnum 
+		) );
 		if ($return) {
 			return $result;
 		} else {
 			$this->_imgFilesPattern = $result;
 		}
-	
 	}
+
 	/**
 	 * 
 	 * 检测文件是否存在并且可读
 	 * @param array $files
 	 * @throws Exception
 	 */
-	public static function checkFilesReadable($files = array()) {
+	public function checkFilesReadable($files = array()) {
 		foreach ( $files as $file ) {
 			if (is_file ( $file )) {
 				if (! is_readable ( $file )) {
@@ -210,6 +247,7 @@ class AutoSprite {
 			}
 		}
 	}
+
 	/**
 	 * 
 	 * 替换CSS
@@ -224,11 +262,12 @@ class AutoSprite {
 		$instance->replaceImg = rtrim ( $this->cssReplaceImgPrefixPath, '/' ) . '/' . self::getFilename ( $this->outputImgFile );
 		$instance->run ();
 	}
-	
+
 	public function run() {
 		$this->generate ( false );
 		$this->replaceCss ();
 	}
+
 	/**
 	 * 
 	 * 检查扩展是否已经加载
@@ -248,6 +287,7 @@ class AutoSprite {
 		}
 		return false;
 	}
+
 	/**
 	 * 
 	 * 加载一个类
@@ -272,6 +312,7 @@ class AutoSprite {
 			self::throwException ( $class . ' is not found', 1 );
 		}
 	}
+
 	/**
 	 * 
 	 * 获取某个目录下的特定文件类型的文件列表
@@ -302,6 +343,7 @@ class AutoSprite {
 		}
 		return array ();
 	}
+
 	/**
 	 * 创建目录
 	 * @param string $dir
@@ -314,6 +356,7 @@ class AutoSprite {
 			return false;
 		return @mkdir ( $dir, $mode, true );
 	}
+
 	/**
 	 * 
 	 * 获取文件内容
@@ -327,6 +370,7 @@ class AutoSprite {
 			self::throwException ( $file . ' is not exist or can not readable', 10 );
 		}
 	}
+
 	/**
 	 * 
 	 * 保存文件内容
@@ -340,6 +384,7 @@ class AutoSprite {
 		}
 		return file_put_contents ( $file, $content );
 	}
+
 	/**
 	 * 
 	 * 获取文件的后缀名
@@ -349,6 +394,7 @@ class AutoSprite {
 		$afterExplode = explode ( '.', basename ( $filename ) );
 		return strtolower ( end ( $afterExplode ) );
 	}
+
 	/**
 	 * 
 	 * 获取文件名
@@ -358,12 +404,13 @@ class AutoSprite {
 		$afterExplode = explode ( '/', basename ( $filename ) );
 		return strtolower ( end ( $afterExplode ) );
 	}
+
 	/**
 	 * 
 	 * 检测图片的类型
 	 * @param array $imgs
 	 */
-	public static function checkImgType($imgs = array()) {
+	public function checkImgType($imgs = array()) {
 		foreach ( $imgs as $img ) {
 			$ext = self::getExtName ( $img );
 			$ext = strtolower ( $ext );
@@ -372,6 +419,7 @@ class AutoSprite {
 			}
 		}
 	}
+
 	/**
 	 * 
 	 * 抛出异常
@@ -384,6 +432,10 @@ class AutoSprite {
 		if ($class) {
 			$message = self::$_class . ': ' . $message;
 		}
-		throw new Exception ( $message, $code );
+		throw new AutoSprite_Exception ( $message, $code );
 	}
+}
+class AutoSprite_Exception extends Exception {
+
+	public $message;
 }
